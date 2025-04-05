@@ -1,4 +1,3 @@
-const ELEVENLABS_API_KEY = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c'
 
 let stream;
 
