@@ -1,3 +1,4 @@
+const ELEVENLABS_API_KEY = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c'
 
 let stream;
 
@@ -30,7 +31,15 @@ onkeydown = (event) => {
         console.log("Recording started");
     } else if (event.key === "Escape") {
         mediaRecorder.stop();
+        record.style.background = '';
+        record.style.color = '';
         console.log("Recording stopped");
     }
+}
+
+let chunks = [];
+
+mediaRecorder.ondataavailable = (e) => {
+    chunks.push(e.data);
 }
 
