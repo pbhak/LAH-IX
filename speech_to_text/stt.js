@@ -1,5 +1,6 @@
-require('dotenv').config();
-console.log(process.env.ELEVENLABS_API_KEY);
+const ELEVENLABS_API_KEY = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c'
+
+let stream;
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.log("getUserMedia is supported");
@@ -10,7 +11,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 video: false
             }
         )
-    .then((stream) => {})
+    .then((mediaStream) => {
+        stream = mediaStream; // Assign the stream here
+        const mediaRecorder = new MediaRecorder(stream); // This line will now work correctly after stream is assigned
+    })
 
     .catch((err) => {
         console.error("The following getUserMedia error occurred: " + err);
@@ -18,8 +22,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 } else {
     console.log("getUserMedia is not supported on your browser!");
 }
-
-const mediaRecorder = new MediaRecorder(stream);
 
 addEventListener("keydown", (event) => {});
 
