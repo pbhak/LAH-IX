@@ -56,7 +56,16 @@ button {
     margin-top: 2rem;
 }
 
+button:hover {
+    filter: brightness(0.8);
+}
+
 a {
     text-decoration: none;
 
+}
+
+img {
+    float: right;
+    margin-right: 7.7rem;
 }
