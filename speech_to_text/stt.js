@@ -1,6 +1,7 @@
 const ELEVENLABS_API_KEY = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c'
 
 let stream;
+let mediaRecorder; // Declare mediaRecorder in the global scope
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.log("getUserMedia is supported");
@@ -13,7 +14,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         )
     .then((mediaStream) => {
         stream = mediaStream; // Assign the stream here
-        const mediaRecorder = new MediaRecorder(stream); // This line will now work correctly after stream is assigned
+        mediaRecorder = new MediaRecorder(stream); // Assign mediaRecorder here
+
+        // Assign the ondataavailable event handler after mediaRecorder is initialized
+        mediaRecorder.ondataavailable = (e) => {
+            chunks.push(e.data);
+        };
     })
 
     .catch((err) => {
@@ -38,8 +44,4 @@ onkeydown = (event) => {
 }
 
 let chunks = [];
-
-mediaRecorder.ondataavailable = (e) => {
-    chunks.push(e.data);
-}
 
