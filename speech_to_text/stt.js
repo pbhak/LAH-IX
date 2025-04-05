@@ -1,47 +1,48 @@
-const ELEVENLABS_API_KEY = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c'
+// Set up basic variables for app
+const record = document.querySelector(".record");
+const stop = document.querySelector(".stop");
+const soundClips = document.querySelector(".sound-clips");
 
-let stream;
-let mediaRecorder; // Declare mediaRecorder in the global scope
+// Disable stop button while not recording
+stop.disabled = true;
 
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    console.log("getUserMedia is supported");
-    navigator.mediaDevices
-        .getUserMedia(
-            {
-                audio: true,
-                video: false
-            }
-        )
-    .then((mediaStream) => {
-        stream = mediaStream; // Assign the stream here
-        mediaRecorder = new MediaRecorder(stream); // Assign mediaRecorder here
+// Main block for doing the audio recording
+if (navigator.mediaDevices.getUserMedia) {
+  console.log("The mediaDevices.getUserMedia() method is supported.");
 
-        // Assign the ondataavailable event handler after mediaRecorder is initialized
-        mediaRecorder.ondataavailable = (e) => {
-            chunks.push(e.data);
-        };
-    })
+  const constraints = { audio: true };
+  let chunks = [];
 
-    .catch((err) => {
-        console.error("The following getUserMedia error occurred: " + err);
-    });
+  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    const mediaRecorder = new MediaRecorder(stream);
+
+    record.onclick = () => {
+      mediaRecorder.start();
+      record.disabled = true;
+      stop.disabled = false;
+    };
+
+    stop.onclick = () => {
+      mediaRecorder.stop();
+      record.disabled = false;
+      stop.disabled = true;
+    };
+
+    mediaRecorder.onstop = () => {
+      const audio = document.createElement("audio");
+      audio.setAttribute("controls", "");
+      const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+      chunks = [];
+      audio.src = window.URL.createObjectURL(blob);
+      soundClips.appendChild(audio);
+    };
+
+    mediaRecorder.ondataavailable = (e) => {
+      chunks.push(e.data);
+    };
+  }).catch((err) => {
+    console.log("The following error occurred: " + err);
+  });
 } else {
-    console.log("getUserMedia is not supported on your browser!");
+  console.log("MediaDevices.getUserMedia() not supported on your browser!");
 }
-
-addEventListener("keydown", (event) => {});
-
-onkeydown = (event) => {
-    if (event.key === "Enter") {
-        mediaRecorder.start();
-        console.log("Recording started");
-    } else if (event.key === "Escape") {
-        mediaRecorder.stop();
-        record.style.background = '';
-        record.style.color = '';
-        console.log("Recording stopped");
-    }
-}
-
-let chunks = [];
-
