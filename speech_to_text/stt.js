@@ -18,3 +18,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 } else {
     console.log("getUserMedia is not supported on your browser!");
 }
+
+const mediaRecorder = new MediaRecorder(stream);
+
+addEventListener("keydown", (event) => {});
+
+onkeydown = (event) => {
+    if (event.key === "Enter") {
+        mediaRecorder.start();
+        console.log("Recording started");
+    } else if (event.key === "Escape") {
+        mediaRecorder.stop();
+        console.log("Recording stopped");
+    }
+}
+
