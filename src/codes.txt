@@ -1,0 +1,13 @@
+thumb cmc (x, y):  (8.81, 111.06)
+thumb mcp (x, y):  (33.99, 79.49)
+thumb ip (x, y):   (48.04, 53.86)
+thumb tip (x, y):  (60.54, 32.81)
+index mcp (x, y):  (18.81, 31.99)
+index pip (x, y):  (34.20, 10.70)
+index dip (x, y):  (49.09, 13.70)
+index tip (x, y):  (61.20, 22.50)
+middle mcp (x, y): (0.00, 25.23)
+middle pip (x, y): (18.37, 0.00)
+middle tip (x, y): (46.90, 20.97)
+middle dip (x, y): (35.23, 6.85)
+
