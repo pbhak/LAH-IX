@@ -22,10 +22,36 @@ h3 {
     color: #000080;
     font-weight: 600;
     font-size: 1.5rem;
+    margin-left: 2rem;
 }
 
 p {
     color: #000080;
     font-weight: 400;
     font-size: 1.125rem;
+    margin-left: 3.5rem;
+    margin-right: 45rem;
+
+}
+
+ul {
+    color: #000080;
+    font-weight: 400;
+    font-size: 1.125rem;
+    margin-left: 3rem;
+    margin-bottom: 4rem;
+}
+
+button {
+    display: block;
+    margin: auto;
+    color: #000080;
+    background-color: #fffef5;
+    border-color: #000080;
+    outline: none;
+    border-radius: 0.75rem;
+    width: 6rem;
+    height: 1.5rem;
+    scale: 2.5;
+    margin-top: 2rem;
 }
