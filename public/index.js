@@ -24,7 +24,7 @@ const TOGETHERNESS_THRESHOLD = 0.98
 const CLICK_THRESHOLD = 16
 const RIGHT_CLICK_THRESHOLD = 20
 
-async function send_req() {
+async function send_req(point) {
   console.log('called')
   await send_cursor_request(Number(point.x.toFixed(2)), Number(point.y.toFixed(2)));
 }
@@ -171,7 +171,7 @@ function draw() {
       document.getElementById('indexX').innerHTML = point.x;
       document.getElementById('indexY').innerHTML = point.y;
     
-      setTimeout(send_cursor_request(point.x, point.y), 50000);
+      setTimeout(send_req(point), 2000)
 
       circle(point.x, point.y, 10);
      }
@@ -286,7 +286,7 @@ async function registerSecClick(distance) {
 function calculateY(y1, y2) {
   preY = (480 - (y1 + y2) / 2 ) - 240
   if (preY < 0) {
-    preY *= 3
+    preY *= 9
   }
 
   return preY
