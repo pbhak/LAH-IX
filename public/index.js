@@ -28,13 +28,18 @@ function preload () {
 
 function setup() {
   createCanvas(640, 480);
-  video = createCapture(VIDEO).size(640, 480).hide();
+  video = createCapture(VIDEO, true).size(640, 480).hide();
   handPose.detectStart(video, results => hands = results);
   connections = handPose.getConnections();
 }
 
 function draw() {
+  let allCoords = []
   let coords = []
+
+  image(video, 0, 0, width, height);
+  translate(width,0); // move to far corner
+  scale(-1.0,1.0);    // flip x-axis backwards
   image(video, 0, 0, width, height);
 
   for (let i = 0; i < hands.length; i++) {
@@ -55,10 +60,12 @@ function draw() {
             continue
           }
 
-          if (element1.name.split('_')[-1] == element2.name.split('_')[-1]) {
+          if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
             stroke(0, 0, 0);
             strokeWeight(2);
             console.log(`drawing line ${element1Joint} with distance ${distance(element1.x, element2.x, element1.y, element2.y)}`)
+            
+            coords.push(distance(element1.x, element2.x, element1.y, element2.y))
             line(element1.x, element1.y, element2.x, element2.y)
           }
         }
@@ -134,5 +141,5 @@ function distance(x1, x2, y1, y2) {
 }
 
 function fingersTogether(mcp, pip, dip, tip) {
-  
+  return [Number((mcp / pip).toFixed(4)), Number((dip / tip).toFixed(4))]
 }
