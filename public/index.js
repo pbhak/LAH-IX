@@ -80,16 +80,33 @@ function draw() {
         }
       }
       }
-
+  
     if (fingersTogether(...allCoords)) {
       window.scrollBy({
-        top: -((latestY) * 3),
+        top: ((latestY) * 5),
         behavior: 'smooth'
       });
     }
     allCoords = []
 
-    for (let j = 0; j < connections.length; j++) {
+    for (let l = 0; l < hand.keypoints.length; l++) {
+      const point = hand.keypoints[l]
+      
+      if (!(point.name.split('_')[0] == 'index') || point.name.split('_')[point.name.split('_').length - 1] != 'tip') {
+        continue
+      }
+
+      fill(0, 255, 0);
+
+      document.getElementById('indexX').innerHTML = point.x
+      document.getElementById('indexY').innerHTML = point.y
+
+      circle(point.x, point.y, 10);
+     }
+
+     
+
+     for (let j = 0; j < connections.length; j++) {
       let pointAIndex = connections[j][0];
       let pointBIndex = connections[j][1];
       let pointA = hand.keypoints[pointAIndex];
@@ -114,9 +131,9 @@ function draw() {
       let keypoint = hand.keypoints[j];
       if (keypoint.name.includes('index') || keypoint.name.includes('middle')) {
         // console.log(`${keypoint.name.split('_')[0]} ${keypoint.name.includes('thumb') ? keypoint.name.split('_')[1] : keypoint.name.split('_')[2]} (x, y): (${Number(keypoint.x.toFixed(2))}, ${Number(keypoint.y.toFixed(2))})`)
-        coords.push([Number(keypoint.x.toFixed(2)), Number(keypoint.y.toFixed(2))])
-        fill(0, 255, 0);
-        circle(keypoint.x, keypoint.y, 10);
+        // coords.push([Number(keypoint.x.toFixed(2)), Number(keypoint.y.toFixed(2))])
+        // fill(0, 255, 0);
+        // circle(keypoint.x, keypoint.y, 10);
       }
     } 
   }
@@ -164,7 +181,7 @@ function fingersTogether(pip, dip) {
 
 function calculateY(y1, y2) {
   preY = (480 - (y1 + y2) / 2 ) - 240
-  if (preY > 0) {
+  if (preY < 0) {
     preY *= 3
   }
 
