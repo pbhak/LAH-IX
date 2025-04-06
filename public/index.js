@@ -167,9 +167,11 @@ function draw() {
 
       fill(0, 255, 0);
 
-      (async function () {
-        await new Promise(r => setTimeout(r, 200));
-      })().then(() => send_req(point));
+      send_req(point)
+
+      // (async function () {
+      //   await new Promise(r => setTimeout(r, 200));
+      // })().then(() => send_req(point));
 
       circle(point.x, point.y, 10);
      }
