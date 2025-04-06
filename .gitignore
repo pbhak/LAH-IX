@@ -1,5 +1,6 @@
 # Python venv files
 api/venv/
+api/__pycache__/
 /.vscode
 # Logs
 logs

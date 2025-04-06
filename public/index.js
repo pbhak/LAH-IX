@@ -21,8 +21,13 @@ const SCROLL = [
 ];
 
 const TOGETHERNESS_THRESHOLD = 0.98
+const CLICK_THRESHOLD = 16
+const RIGHT_CLICK_THRESHOLD = 20
 
-/////////////////
+async function send_req() {
+  console.log('called')
+  await send_cursor_request(Number(point.x.toFixed(2)), Number(point.y.toFixed(2)));
+}
 
 function preload () {
   handPose = ml5.handPose();
@@ -67,7 +72,7 @@ function draw() {
         if (element1Joint == 'tip') {
           latestY = calculateY(element1.y, element2.y)
           document.getElementById('yDisplay').innerHTML = latestY
-          console.log(`tip y value is ${latestY}`)
+          // console.log(`tip y value is ${latestY}`)
         }
 
         if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
@@ -89,6 +94,71 @@ function draw() {
     }
     allCoords = []
 
+    ////// LEFT CLICKING
+
+    let clickCoords = []
+
+    for (let m = 0; m < hand.keypoints.length; m++) {
+      const point = hand.keypoints[m];
+      const pointName = point.name.split('_')[0]
+      const pointJoint = point.name.split('_')[hand.keypoints[m].name.split('_').length - 1]
+      
+      // Only continue if current point is thumb or index finger tip
+      if (!(pointName == 'thumb' || pointName == 'index') || !(pointJoint == 'tip')) {
+        continue;
+      }
+
+      clickCoords.push([point.x, point.y])
+    }
+
+    // Draw line for click points
+    stroke(255, 255, 255);
+    strokeWeight(2);
+    const lineDistance = distance(clickCoords[0][0], clickCoords[1][0], clickCoords[0][1], clickCoords[1][1])
+    console.log(`drawing line with distance ${lineDistance}`)
+    line(clickCoords[0][0], clickCoords[0][1], clickCoords[1][0], clickCoords[1][1]);
+    
+    (async function () {
+      await registerClick(lineDistance);
+    })();
+    
+    clickCoords = []
+
+    //////////////////////
+    /////// RIGHT CLICKING
+
+    let rightClickCoords = []
+
+    for (let m = 0; m < hand.keypoints.length; m++) {
+      const point = hand.keypoints[m];
+      const pointName = point.name.split('_')[0]
+      const pointJoint = point.name.split('_')[hand.keypoints[m].name.split('_').length - 1]
+      
+      // Only continue if current point is thumb or index finger tip
+      if (!(pointName == 'thumb' || pointName == 'middle') || !(pointJoint == 'tip')) {
+        continue;
+      }
+
+      rightClickCoords.push([point.x, point.y])
+    }
+
+    // Draw line for click points
+    stroke(255, 255, 255);
+    strokeWeight(2);
+    const rightClickLineDistance = distance(rightClickCoords[0][0], rightClickCoords[1][0], rightClickCoords[0][1], rightClickCoords[1][1])
+    // console.log(`drawing line (sec) with distance ${rightClickLineDistance}`)
+    console.log(rightClickLineDistance)
+    line(rightClickCoords[0][0], rightClickCoords[0][1], rightClickCoords[1][0], rightClickCoords[1][1]);
+    
+    (async function () {
+      await registerSecClick(rightClickLineDistance);
+    })();
+    
+    rightClickCoords = []
+
+    //////////////////////
+    
+
     for (let l = 0; l < hand.keypoints.length; l++) {
       const point = hand.keypoints[l]
   
@@ -98,8 +168,10 @@ function draw() {
 
       fill(0, 255, 0);
 
-      document.getElementById('indexX').innerHTML = point.x
-      document.getElementById('indexY').innerHTML = point.y
+      document.getElementById('indexX').innerHTML = point.x;
+      document.getElementById('indexY').innerHTML = point.y;
+    
+      setTimeout(send_cursor_request(point.x, point.y), 50000);
 
       circle(point.x, point.y, 10);
      }
@@ -179,6 +251,38 @@ function fingersTogether(pip, dip) {
   return pip / dip >= TOGETHERNESS_THRESHOLD
 }
 
+async function registerClick(distance) {
+  if (distance > CLICK_THRESHOLD) {
+    return false;
+  }
+
+  // trigger click
+  console.log('clicking!')
+  const options = {
+    method: 'POST',
+    mode: 'no-cors'
+  };
+  await fetch("http://localhost:8000/click", options).then(value => {
+    return value;
+  });
+}
+
+async function registerSecClick(distance) {
+  if (distance > RIGHT_CLICK_THRESHOLD) {
+    return false;
+  }
+
+  // trigger click
+  console.log('clicking (sec)!')
+  const options = {
+    method: 'POST',
+    mode: 'no-cors'
+  };
+  await fetch("http://localhost:8000/secclick", options).then(value => {
+    return value;
+  });
+}
+
 function calculateY(y1, y2) {
   preY = (480 - (y1 + y2) / 2 ) - 240
   if (preY < 0) {
@@ -186,4 +290,19 @@ function calculateY(y1, y2) {
   }
 
   return preY
+}
+
+async function send_cursor_request(x, y) {
+  // console.log(`x: ${x}, y: ${y}`)
+  const options = {
+    method: 'POST',
+    headers: {'content-type': 'application/json'},
+    body: JSON.stringify({ x, y }),
+    mode: 'no-cors'
+  };
+  // console.log(JSON.stringify({ x, y }))
+  await fetch("http://localhost:8000/cursor", options).then(value => {
+    // console.log(`returned value: ${value}`)
+    return value;
+  });
 }

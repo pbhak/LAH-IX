@@ -24,5 +24,13 @@ app.add_middleware(
 async def cursor(request: Request):
     json = await request.json()
     print(json['x'] * 1.125)
-    autopy.mouse.move(1439.5 - (json['x'] * 2.24921875), (json['y'] * 1.875))
+    # autopy.mouse.move(1439.5 - (json['x'] * 2.24921875), (json['y'] * 1.875))
     return ''
+
+@app.post('/click')
+def click():
+    autopy.mouse.click(autopy.mouse.Button.LEFT)
+
+@app.post('/secclick')
+def click():
+    autopy.mouse.click(autopy.mouse.Button.RIGHT)
