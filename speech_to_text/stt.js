@@ -1,4 +1,6 @@
 // Set up basic variables for app
+
+window.outputFile;
 const record = document.querySelector(".record");
 const stop = document.querySelector(".stop");
 const soundClips = document.querySelector(".sound-clips");
@@ -36,11 +38,10 @@ if (navigator.mediaDevices.getUserMedia) {
       audio.src = window.URL.createObjectURL(blob);
       soundClips.appendChild(audio);
       console.log("Blob type:", blob.type); 
-      const outputFile = new File([blob], 'output.mp3', {
+      var outputFile = new File([blob], 'output.mp3', {
         type: blob.type
       });
       console.log("Output file:", outputFile);
-      download(outputFile, 'output.mp3', blob.type);
     };
 
     mediaRecorder.ondataavailable = (e) => {
