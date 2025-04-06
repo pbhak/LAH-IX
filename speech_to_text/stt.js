@@ -35,6 +35,11 @@ if (navigator.mediaDevices.getUserMedia) {
       chunks = [];
       audio.src = window.URL.createObjectURL(blob);
       soundClips.appendChild(audio);
+      console.log("Blob type:", blob.type); //
+      const outputFile = new File([blob], 'output.mp3', {
+        type: blob.type
+      });
+      console.log("Output file:", outputFile); // Log the output file object
     };
 
     mediaRecorder.ondataavailable = (e) => {
