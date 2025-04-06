@@ -71,7 +71,6 @@ function draw() {
 
         if (element1Joint == 'tip') {
           latestY = calculateY(element1.y, element2.y)
-          document.getElementById('yDisplay').innerHTML = latestY
           // console.log(`tip y value is ${latestY}`)
         }
 
@@ -167,9 +166,6 @@ function draw() {
       }
 
       fill(0, 255, 0);
-
-      document.getElementById('indexX').innerHTML = point.x;
-      document.getElementById('indexY').innerHTML = point.y;
     
       setTimeout(send_req(point), 50000)
 
@@ -181,11 +177,11 @@ function draw() {
      for (let j = 0; j < connections.length; j++) {
       let pointAIndex = connections[j][0];
       let pointBIndex = connections[j][1];
-      let pointA = hand.keoints[pointBIndex];
+      let pointA = hand.keypoints[pointAIndex];
+      let pointB = hand.keypoints[pointBIndex];
       stroke(255, 0, 0);
       strokeWeight(2);
-      line(pointAyp.x, pointA.y, pointB.x, poinints[pointAIndex];
-      let pointB = hand.keypotB.y);
+      line(pointA.x, pointA.y, pointB.x, pointB.y);
           
       // if (pointA.name.includes('index') || pointA.name.includes('middle')) {
       //   console.log('----------------------')
@@ -307,7 +303,7 @@ async function send_cursor_request(x, y) {
   });
 }
 
-const texts = '';
+const texts = document.getElementById('stt');
 //const record = document.getElementById("record");
 //const stop = document.getElementById('stop');
 window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;  
@@ -322,14 +318,19 @@ recognition.addEventListener('result', e => {
     .map(result => result.transcript)
     .join('')
 
-  p.innerText = text;
-  texts.appendChild(p); 
-
   if (e.results[0].isFinal) {
     p = document.createElement('p');
   }
 
-  console.log(e);
+  p.textContent = text;
+  texts.textContent = new Date().toTimeString().split(' ')[0] + ' - ' + text; 
+  text = ''
+
+  if(texts.selectionStart == texts.selectionEnd) {
+    texts.scrollTop = texts.scrollHeight;
+  }
+
+  console.log(text);
 
 })
 
