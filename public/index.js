@@ -91,7 +91,7 @@ function draw() {
 
     for (let l = 0; l < hand.keypoints.length; l++) {
       const point = hand.keypoints[l]
-      
+  
       if (!(point.name.split('_')[0] == 'index') || point.name.split('_')[point.name.split('_').length - 1] != 'tip') {
         continue
       }
