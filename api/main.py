@@ -1,25 +1,29 @@
 import autopy
-import math
-import time
-import random
+from typing import Union
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 
-TWO_PI = math.pi * 2.0
+app = FastAPI()
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-def sine_mouse_wave():
-    """
-    Moves the mouse in a sine wave from the left edge of
-    the screen to the right.
-    """
-    width, height = autopy.screen.size()
-    height /= 2
-    height -= 10  # Stay in the screen bounds.
-
-    for x in range(int(width)):
-        y = int(height * math.sin((TWO_PI * x) / width) + height)
-        autopy.mouse.move(x, y)
-        time.sleep(random.uniform(0.001, 0.003))
-
-
-# sine_mouse_wave()
-print(autopy.mouse.location()) # 720 x 450
+@app.post("/cursor")
+async def cursor(request: Request):
+    json = await request.json()
+    print(json['x'] * 1.125)
+    autopy.mouse.move(1439.5 - (json['x'] * 2.24921875), (json['y'] * 1.875))
+    return ''

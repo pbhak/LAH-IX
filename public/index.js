@@ -24,6 +24,11 @@ const TOGETHERNESS_THRESHOLD = 0.98
 
 /////////////////
 
+async function send_req() {
+  console.log('called')
+  await send_cursor_request(Number(point.x.toFixed(2)), Number(point.y.toFixed(2)));
+}
+
 function preload () {
   handPose = ml5.handPose();
 }
@@ -98,8 +103,10 @@ function draw() {
 
       fill(0, 255, 0);
 
-      document.getElementById('indexX').innerHTML = point.x
-      document.getElementById('indexY').innerHTML = point.y
+      document.getElementById('indexX').innerHTML = point.x;
+      document.getElementById('indexY').innerHTML = point.y;
+    
+      setTimeout(send_cursor_request(point.x, point.y), 50000);
 
       circle(point.x, point.y, 10);
      }
@@ -186,4 +193,19 @@ function calculateY(y1, y2) {
   }
 
   return preY
+}
+
+async function send_cursor_request(x, y) {
+  console.log(`x: ${x}, y: ${y}`)
+  const options = {
+    method: 'POST',
+    headers: {'content-type': 'application/json'},
+    body: JSON.stringify({ x, y }),
+    mode: 'no-cors'
+  };
+  console.log(JSON.stringify({ x, y }))
+  await fetch("http://localhost:8000/cursor", options).then(value => {
+    console.log(`returned value: ${value}`)
+    return value;
+  });
 }
