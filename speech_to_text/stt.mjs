@@ -1,10 +1,12 @@
 import { ElevenLabsClient } from "elevenlabs";
 
+window.outputFile;
+
 const client = new ElevenLabsClient();
 
 const response = await fetch(
 
-  "https://storage.googleapis.com/eleven-public-cdn/audio/marketing/nicole.mp3"
+  outputFile
 
 );
 
