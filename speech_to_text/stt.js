@@ -1,7 +1,5 @@
 // Set up basic variables for app
 
-window.outputFile;
-window.outputText;
 const record = document.querySelector(".record");
 const stop = document.querySelector(".stop");
 const soundClips = document.querySelector(".sound-clips");
@@ -31,19 +29,37 @@ if (navigator.mediaDevices.getUserMedia) {
       stop.disabled = true;
     };
 
-    mediaRecorder.onstop = () => {
+    mediaRecorder.onstop = async () => {
       const audio = document.createElement("audio");
       audio.setAttribute("controls", "");
       const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
       chunks = [];
       audio.src = window.URL.createObjectURL(blob);
       soundClips.appendChild(audio);
-      console.log("Blob type:", blob.type); 
-      var outputFile = new File([blob], 'output.mp3', {
-        type: blob.type
-      });
+      console.log("Blob type:", blob.type);
+
+      const outputFile = new File([blob], 'output.mp3', { type: blob.type });
       console.log("Output file:", outputFile);
-      console.log(window.outputText);
+
+      const apiKey = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c';
+      const modelId = "scribe_v1";
+
+      if (!apiKey) {
+        console.error("API key is required for transcription.");
+        return;
+      }
+
+      try {
+        const transcription = await transcribeAudio(apiKey, modelId, outputFile);
+        console.log("Transcription:", transcription);
+
+        // Display transcription in the UI instead of using a global variable
+        const transcriptionDisplay = document.createElement("p");
+        transcriptionDisplay.textContent = transcription;
+        soundClips.appendChild(transcriptionDisplay);
+      } catch (error) {
+        console.error("Transcription error:", error);
+      }
     };
 
     mediaRecorder.ondataavailable = (e) => {
@@ -55,20 +71,32 @@ if (navigator.mediaDevices.getUserMedia) {
 } else {
   console.log("MediaDevices.getUserMedia() not supported on your browser!");
 }
-function download(data, filename, type) {
-    var file = new Blob([data], {type: type});
-    if (window.navigator.msSaveOrOpenBlob) // IE10+
-        window.navigator.msSaveOrOpenBlob(file, filename);
-    else { // Others
-        var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);  
-        }, 0); 
-    }
+
+async function transcribeAudio(apiKey, modelId, file) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+
+    formData.append("model_id", modelId);
+    formData.append("file", file);
+
+    xhr.open("POST", "https://api.elevenlabs.io/v1/speech-to-text");
+    xhr.setRequestHeader("xi-api-key", apiKey);
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          resolve(response.text);
+        } catch (error) {
+          reject("Error parsing response: " + error.message);
+        }
+      } else {
+        reject(`Error: ${xhr.status} - ${xhr.statusText}`);
+      }
+    };
+
+    xhr.onerror = () => reject("Network error occurred.");
+    xhr.send(formData);
+  });
 }
