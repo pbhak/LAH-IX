@@ -50,41 +50,43 @@ function draw() {
     let hand = hands[i];
 
     for (let k = 0; k < hand.keypoints.length; k++) {
-        for (let l = 0; l < hand.keypoints.length; l++) {
-          const element1 = hand.keypoints[k]
-          const element2 = hand.keypoints[l]
-          
-          const element1Name = element1.name.split('_')[0]
-          const element2Name = element2.name.split('_')[0]
+      for (let l = 0; l < hand.keypoints.length; l++) {
+        const element1 = hand.keypoints[k]
+        const element2 = hand.keypoints[l]
+        
+        const element1Name = element1.name.split('_')[0]
+        const element2Name = element2.name.split('_')[0]
 
-          const element1Joint = element1.name.split('_')[element1.name.split('_').length - 1]
-          const element2Joint = element2.name.split('_')[element2.name.split('_').length - 1]
-          
-          if (!(element1Name == 'index' && element2Name == 'middle') || (element2Name == 'index' && element1Name == 'middle') || !(element1Joint == element2Joint)) {
-            continue
-          }
+        const element1Joint = element1.name.split('_')[element1.name.split('_').length - 1]
+        const element2Joint = element2.name.split('_')[element2.name.split('_').length - 1]
+        
+        if (!(element1Name == 'index' && element2Name == 'middle') || (element2Name == 'index' && element1Name == 'middle') || !(element1Joint == element2Joint)) {
+          continue
+        }
 
-          if (element1Joint == 'tip') {
-            console.log(`tip y value is ${480 - (element1.y + element2.y) / 2}`)
-            latestY = 480 - (element1.y + element2.y) / 2 
-            window.scrollBy({
-              top: -(latestY * 2),
-              behavior: 'smooth'
-            });
-          }
+        if (element1Joint == 'tip') {
+          latestY = calculateY(element1.y, element2.y)
+          document.getElementById('yDisplay').innerHTML = latestY
+          console.log(`tip y value is ${latestY}`)
+        }
 
-          if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
-            stroke(0, 0, 0);
-            strokeWeight(2);
-            // console.log(`drawing line ${element1Joint} with distance ${distance(element1.x, element2.x, element1.y, element2.y)}`)
-            allCoords.push(distance(element1.x, element2.x, element1.y, element2.y))
-            coords.push(distance(element1.x, element2.x, element1.y, element2.y))
-            line(element1.x, element1.y, element2.x, element2.y)
-          }
+        if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
+          stroke(0, 0, 0);
+          strokeWeight(2);
+          // console.log(`drawing line ${element1Joint} with distance ${distance(element1.x, element2.x, element1.y, element2.y)}`)
+          allCoords.push(distance(element1.x, element2.x, element1.y, element2.y))
+          coords.push(distance(element1.x, element2.x, element1.y, element2.y))
+          line(element1.x, element1.y, element2.x, element2.y)
         }
       }
+      }
 
-    console.log(fingersTogether(...allCoords))
+    if (fingersTogether(...allCoords)) {
+      window.scrollBy({
+        top: -((latestY) * 3),
+        behavior: 'smooth'
+      });
+    }
     allCoords = []
 
     for (let j = 0; j < connections.length; j++) {
@@ -158,4 +160,13 @@ function distance(x1, x2, y1, y2) {
 
 function fingersTogether(pip, dip) {
   return pip / dip >= TOGETHERNESS_THRESHOLD
+}
+
+function calculateY(y1, y2) {
+  preY = (480 - (y1 + y2) / 2 ) - 240
+  if (preY > 0) {
+    preY *= 3
+  }
+
+  return preY
 }
