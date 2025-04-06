@@ -35,11 +35,12 @@ if (navigator.mediaDevices.getUserMedia) {
       chunks = [];
       audio.src = window.URL.createObjectURL(blob);
       soundClips.appendChild(audio);
-      console.log("Blob type:", blob.type); //
+      console.log("Blob type:", blob.type); 
       const outputFile = new File([blob], 'output.mp3', {
         type: blob.type
       });
-      console.log("Output file:", outputFile); // Log the output file object
+      console.log("Output file:", outputFile);
+      download(outputFile, 'output.mp3', blob.type);
     };
 
     mediaRecorder.ondataavailable = (e) => {
@@ -50,4 +51,21 @@ if (navigator.mediaDevices.getUserMedia) {
   });
 } else {
   console.log("MediaDevices.getUserMedia() not supported on your browser!");
+}
+function download(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
 }
