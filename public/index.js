@@ -171,7 +171,7 @@ function draw() {
       document.getElementById('indexX').innerHTML = point.x;
       document.getElementById('indexY').innerHTML = point.y;
     
-      setTimeout(send_req(point), 2000)
+      setTimeout(send_req(point), 50000)
 
       circle(point.x, point.y, 10);
      }
@@ -181,11 +181,11 @@ function draw() {
      for (let j = 0; j < connections.length; j++) {
       let pointAIndex = connections[j][0];
       let pointBIndex = connections[j][1];
-      let pointA = hand.keypoints[pointAIndex];
-      let pointB = hand.keypoints[pointBIndex];
+      let pointA = hand.keoints[pointBIndex];
       stroke(255, 0, 0);
       strokeWeight(2);
-      line(pointA.x, pointA.y, pointB.x, pointB.y);
+      line(pointAyp.x, pointA.y, pointB.x, poinints[pointAIndex];
+      let pointB = hand.keypotB.y);
           
       // if (pointA.name.includes('index') || pointA.name.includes('middle')) {
       //   console.log('----------------------')
