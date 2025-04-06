@@ -20,6 +20,8 @@ const SCROLL = [
   [247.12, 308.48]
 ];
 
+const TOGETHERNESS_THRESHOLD = 0.98
+
 /////////////////
 
 function preload () {
@@ -38,8 +40,8 @@ function draw() {
   let coords = []
 
   image(video, 0, 0, width, height);
-  translate(width,0); // move to far corner
-  scale(-1.0,1.0);    // flip x-axis backwards
+  translate(width,0); 
+  scale(-1.0,1.0);   // flip video
   image(video, 0, 0, width, height);
 
   for (let i = 0; i < hands.length; i++) {
@@ -63,13 +65,16 @@ function draw() {
           if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
             stroke(0, 0, 0);
             strokeWeight(2);
-            console.log(`drawing line ${element1Joint} with distance ${distance(element1.x, element2.x, element1.y, element2.y)}`)
-            
+            // console.log(`drawing line ${element1Joint} with distance ${distance(element1.x, element2.x, element1.y, element2.y)}`)
+            allCoords.push(distance(element1.x, element2.x, element1.y, element2.y))
             coords.push(distance(element1.x, element2.x, element1.y, element2.y))
             line(element1.x, element1.y, element2.x, element2.y)
           }
         }
       }
+
+    console.log(()
+    allCoords = []
 
     for (let j = 0; j < connections.length; j++) {
       let pointAIndex = connections[j][0];
@@ -87,7 +92,7 @@ function draw() {
       //   console.log('----------------------')
       // }
     }
-    console.log('/////////////////////////////')
+    // console.log('/////////////////////////////')
   }
 
   for (let i = 0; i < hands.length; i++) {
@@ -140,6 +145,6 @@ function distance(x1, x2, y1, y2) {
   return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
 }
 
-function fingersTogether(mcp, pip, dip, tip) {
-  return [Number((mcp / pip).toFixed(4)), Number((dip / tip).toFixed(4))]
+function fingersTogether(pip, dip) {
+  return pip / dip >= TOGETHERNESS_THRESHOLD
 }
