@@ -29,7 +29,8 @@ function preload () {
 }
 
 function setup() {
-  createCanvas(640, 480);
+  mainCanvas = document.getElementById('main')
+  createCanvas(640, 480, mainCanvas);
   video = createCapture(VIDEO, true).size(640, 480).hide();
   handPose.detectStart(video, results => hands = results);
   connections = handPose.getConnections();
@@ -37,6 +38,7 @@ function setup() {
 
 function draw() {
   let allCoords = []
+  let latestY;
   let coords = []
 
   image(video, 0, 0, width, height);
@@ -62,6 +64,15 @@ function draw() {
             continue
           }
 
+          if (element1Joint == 'tip') {
+            console.log(`tip y value is ${480 - (element1.y + element2.y) / 2}`)
+            latestY = 480 - (element1.y + element2.y) / 2 
+            window.scrollBy({
+              top: -(latestY * 2),
+              behavior: 'smooth'
+            });
+          }
+
           if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
             stroke(0, 0, 0);
             strokeWeight(2);
@@ -73,7 +84,7 @@ function draw() {
         }
       }
 
-    console.log(()
+    console.log(fingersTogether(...allCoords))
     allCoords = []
 
     for (let j = 0; j < connections.length; j++) {
