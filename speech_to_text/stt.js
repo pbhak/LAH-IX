@@ -1,4 +1,4 @@
-const texts = document.querySelector('.texts');
+const texts = '';
 //const record = document.getElementById("record");
 //const stop = document.getElementById('stop');
 window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;  
