@@ -1,6 +1,7 @@
 // Set up basic variables for app
 
 window.outputFile;
+window.outputText;
 const record = document.querySelector(".record");
 const stop = document.querySelector(".stop");
 const soundClips = document.querySelector(".sound-clips");
@@ -42,6 +43,7 @@ if (navigator.mediaDevices.getUserMedia) {
         type: blob.type
       });
       console.log("Output file:", outputFile);
+      console.log(window.outputText);
     };
 
     mediaRecorder.ondataavailable = (e) => {
