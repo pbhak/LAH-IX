@@ -44,11 +44,6 @@ if (navigator.mediaDevices.getUserMedia) {
       const apiKey = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c';
       const modelId = "scribe_v1";
 
-      if (!apiKey) {
-        console.error("API key is required for transcription.");
-        return;
-      }
-
       try {
         const transcription = await transcribeAudio(apiKey, modelId, outputFile);
         console.log("Transcription:", transcription);
