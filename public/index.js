@@ -21,6 +21,7 @@ const SCROLL = [
 ];
 
 const TOGETHERNESS_THRESHOLD = 0.98
+const CLICK_THRESHOLD_DISTANCE = 45;
 
 /////////////////
 
@@ -72,7 +73,7 @@ function draw() {
         if (element1Joint == 'tip') {
           latestY = calculateY(element1.y, element2.y)
           document.getElementById('yDisplay').innerHTML = latestY
-          console.log(`tip y value is ${latestY}`)
+          // console.log(`tip y value  is ${latestY}`)
         }
 
         if (element1.name.split('_')[-1] == element2.name.split('_')[-1] && element1Joint != 'mcp' && element1Joint != 'tip') {
@@ -82,7 +83,6 @@ function draw() {
           allCoords.push(distance(element1.x, element2.x, element1.y, element2.y))
           coords.push(distance(element1.x, element2.x, element1.y, element2.y))
           line(element1.x, element1.y, element2.x, element2.y)
-        }
       }
       }
   
@@ -111,8 +111,34 @@ function draw() {
       circle(point.x, point.y, 10);
      }
 
-     
+     // Click distance calculation
+     for (let i = 0; i < hand.keypoints.length; i++) {
+      const point = hand.keypoints[i]
+      const pointName = point.name.split('_')[0] // finger name (e.g. index, thumb, middle)
+      const pointJoint = point.name.split('_')[point.name.split('_').length - 1] // mcp, dip, pip, or tip
 
+      if (!((pointName == 'index' || pointName == 'thumb') && pointJoint == 'tip')) {
+        continue
+      }
+
+      // From this point, point has to be the tip of the index finger or the thumb
+      allCoords.push([point.x, point.y])
+     }
+
+     // At this point allCoords now contains two sets of coords: one for thumb tip, one for index tip
+     // Draw line between the two tips
+     stroke(255, 255, 255);
+     strokeWeight(2);
+     line(allCoords[0][0], allCoords[0][1], allCoords[1][0], allCoords[1][1]);
+     console.log(`Drawn line between thumb tip and index tip with distance ${distance(allCoords[0][0], allCoords[1][0], allCoords[0][1], allCoords[1][1])}`)
+     if (lClickFingers(allCoords[0][0], allCoords[0][1], allCoords[1][0], allCoords[1][1])) {
+        console.log("clicked!")
+     }
+
+     // Reset allCoords to [] for future iterations
+     allCoords = []
+
+     // Draw skeletal lines
      for (let j = 0; j < connections.length; j++) {
       let pointAIndex = connections[j][0];
       let pointBIndex = connections[j][1];
@@ -136,14 +162,17 @@ function draw() {
     let hand = hands[i];
     for (let j = 0; j < hand.keypoints.length; j++) {
       let keypoint = hand.keypoints[j];
-      if (keypoint.name.includes('index') || keypoint.name.includes('middle')) {
+      // if ((keypoint.name.includes('index') || keypoint.name.includes('thumb')) && keypoint.name.includes('tip')) {
         // console.log(`${keypoint.name.split('_')[0]} ${keypoint.name.includes('thumb') ? keypoint.name.split('_')[1] : keypoint.name.split('_')[2]} (x, y): (${Number(keypoint.x.toFixed(2))}, ${Number(keypoint.y.toFixed(2))})`)
-        // coords.push([Number(keypoint.x.toFixed(2)), Number(keypoint.y.toFixed(2))])
-        // fill(0, 255, 0);
-        // circle(keypoint.x, keypoint.y, 10);
-      }
-    } 
+        // console.log(keypoint)
+        coords.push([Number(keypoint.x.toFixed(2)), Number(keypoint.y.toFixed(2))])
+        fill(0, 255, 0);
+        circle(keypoint.x, keypoint.y, 10);
+      // }
+    // } 
   }
+  }
+}
 }
 
 function minify(coords) {
@@ -186,26 +215,30 @@ function fingersTogether(pip, dip) {
   return pip / dip >= TOGETHERNESS_THRESHOLD
 }
 
+function lClickFingers(indexTipX, indexTipY, thumbTipX, thumbTipY) {
+  return distance(indexTipX, indexTipY, thumbTipX, thumbTipY) <= CLICK_THRESHOLD_DISTANCE;
+}
+
 function calculateY(y1, y2) {
   preY = (480 - (y1 + y2) / 2 ) - 240
   if (preY < 0) {
     preY *= 3
   }
 
-  return preY
+  return preY;
 }
 
 async function send_cursor_request(x, y) {
-  console.log(`x: ${x}, y: ${y}`)
+  // console.log(`x: ${x}, y: ${y}`);
   const options = {
     method: 'POST',
     headers: {'content-type': 'application/json'},
     body: JSON.stringify({ x, y }),
     mode: 'no-cors'
   };
-  console.log(JSON.stringify({ x, y }))
-  await fetch("http://localhost:8000/cursor", options).then(value => {
-    console.log(`returned value: ${value}`)
-    return value;
-  });
+  // console.log(JSON.stringify({ x, y }));
+  // await fetch("http://localhost:8000/cursor", options).then(value => {
+  //   // console.log(`returned value: ${value}`);
+  //   return value;
+  // });
 }
