@@ -166,8 +166,10 @@ function draw() {
       }
 
       fill(0, 255, 0);
-    
-      setTimeout(send_req(point), 50000)
+
+      (async function () {
+        await new Promise(r => setTimeout(r, 200));
+      })().then(() => send_req(point));
 
       circle(point.x, point.y, 10);
      }
@@ -313,7 +315,7 @@ recognition.lang = 'en-US'; // Set the language for recognition
 recognition.continuous = true; // Keep listening until stopped
 let p = document.createElement('p');
 recognition.addEventListener('result', e => {
-  const text = Array.from(e.results)
+  let text = Array.from(e.results)
     .map(result => result[0])
     .map(result => result.transcript)
     .join('')
