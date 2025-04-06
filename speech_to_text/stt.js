@@ -3,6 +3,8 @@
 const record = document.querySelector(".record");
 const stop = document.querySelector(".stop");
 const soundClips = document.querySelector(".sound-clips");
+const apiKey = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c';
+const modelId = "scribe_v1";
 
 // Disable stop button while not recording
 stop.disabled = true;
@@ -41,19 +43,24 @@ if (navigator.mediaDevices.getUserMedia) {
       const outputFile = new File([blob], 'output.mp3', { type: blob.type });
       console.log("Output file:", outputFile);
 
-      const apiKey = 'sk_b4504f94644f2d9e88cd902b5d255d66d76998e3f281468c';
-      const modelId = "scribe_v1";
+
 
       try {
         const transcription = await transcribeAudio(apiKey, modelId, outputFile);
         console.log("Transcription:", transcription);
 
-        // Display transcription in the UI instead of using a global variable
+        // Display transcription in the UI
         const transcriptionDisplay = document.createElement("p");
-        transcriptionDisplay.textContent = transcription;
+        transcriptionDisplay.textContent = transcription || "No transcription available.";
         soundClips.appendChild(transcriptionDisplay);
       } catch (error) {
         console.error("Transcription error:", error);
+
+        // Display error message in the UI
+        const errorDisplay = document.createElement("p");
+        errorDisplay.textContent = "Error during transcription: " + error;
+        errorDisplay.style.color = "red";
+        soundClips.appendChild(errorDisplay);
       }
     };
 
@@ -61,10 +68,10 @@ if (navigator.mediaDevices.getUserMedia) {
       chunks.push(e.data);
     };
   }).catch((err) => {
-    console.log("The following error occurred: " + err);
+    console.error("The following error occurred: " + err);
   });
 } else {
-  console.log("MediaDevices.getUserMedia() not supported on your browser!");
+  console.error("MediaDevices.getUserMedia() not supported on your browser!");
 }
 
 async function transcribeAudio(apiKey, modelId, file) {
@@ -82,7 +89,7 @@ async function transcribeAudio(apiKey, modelId, file) {
       if (xhr.status === 200) {
         try {
           const response = JSON.parse(xhr.responseText);
-          resolve(response.text);
+          resolve(response.text || "No transcription text available.");
         } catch (error) {
           reject("Error parsing response: " + error.message);
         }
