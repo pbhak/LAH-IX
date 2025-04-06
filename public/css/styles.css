@@ -54,6 +54,7 @@ button {
     height: 1.5rem;
     scale: 2.5;
     margin-top: 2rem;
+    margin-bottom: 5rem;
 }
 
 button:hover {
@@ -69,4 +70,112 @@ img {
     float: right;
     margin-right: 7.7rem;
     border-radius: 2rem;
+}
+
+@media screen and (max-width: 924px) {
+    p {
+        font-size: 0.75rem;
+        margin-right: 30rem;
+    }
+
+    ul {
+        font-size: 0.75rem;
+        margin-right: 30rem;
+    }
+
+    img {
+        margin-right: 4.4rem;
+    }
+}
+
+@media screen and (max-width: 724px) {
+    h2 {
+        font-size: 1rem;
+    }
+    img {
+        margin-right: 1.5rem;
+        margin-top: 1rem;
+    }
+}
+
+@media screen and (max-width: 652px) {
+    img {
+        width: 262.5px;
+        height: 262.5px;
+    }
+}
+
+@media screen and (max-width: 616px) {
+    p {
+        margin-right: 20rem;
+    }
+
+    ul {
+        margin-right: 20rem;
+    }
+    
+    img {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 479px) {
+    h3 {
+        margin-left: 1rem;
+    }
+
+    p {
+        margin-left: 1.25rem;
+    }
+
+    ul {
+        margin-left: 0.25rem;
+    }
+}
+
+@media screen and (max-width: 449px) {
+    h2 {
+        font-size: 0.75rem;
+    }
+
+    img {
+        width: 320px;
+        height: 320px;
+        margin-right: 4rem;
+        margin-bottom: 1.75rem;
+
+    }
+
+    p {
+        margin-right: 1.25rem;
+    }
+
+    h3 {
+        margin-right: 1rem;
+    }
+
+    ul {
+        margin-right: 0.25rem;
+    }
+}
+
+@media screen and (max-width: 411px) {
+    img {
+        margin-left: 1.9rem;
+        margin-right: 0;
+        float: left;
+
+    }
+}
+
+@media screen and (max-width: 381px) {
+    img {
+        margin-left: 1rem;
+    }
+}
+
+@media screen and (max-width: 351px) {
+    img {
+        margin-left: 0.3rem;
+    }
 }
