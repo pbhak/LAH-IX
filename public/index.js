@@ -1,5 +1,6 @@
 let handPose;
 let video;
+let connections;
 let hands = [];
 
 ///////////////// CONSTANTS
@@ -29,6 +30,7 @@ function setup() {
   createCanvas(640, 480);
   video = createCapture(VIDEO).size(640, 480).hide();
   handPose.detectStart(video, results => hands = results);
+  connections = handPose.getConnections();
 }
 
 function draw() {
@@ -37,21 +39,61 @@ function draw() {
 
   for (let i = 0; i < hands.length; i++) {
     let hand = hands[i];
+
+    for (let k = 0; k < hand.keypoints.length; k++) {
+        for (let l = 0; l < hand.keypoints.length; l++) {
+          const element1 = hand.keypoints[k]
+          const element2 = hand.keypoints[l]
+          
+          const element1Name = element1.name.split('_')[0]
+          const element2Name = element2.name.split('_')[0]
+
+          const element1Joint = element1.name.split('_')[element1.name.split('_').length - 1]
+          const element2Joint = element2.name.split('_')[element2.name.split('_').length - 1]
+          
+          if (!(element1Name == 'index' && element2Name == 'middle') || (element2Name == 'index' && element1Name == 'middle') || !(element1Joint == element2Joint)) {
+            continue
+          }
+
+          if (element1.name.split('_')[-1] == element2.name.split('_')[-1]) {
+            stroke(0, 0, 0);
+            strokeWeight(2);
+            console.log(`drawing line ${element1Joint} with distance ${distance(element1.x, element2.x, element1.y, element2.y)}`)
+            line(element1.x, element1.y, element2.x, element2.y)
+          }
+        }
+      }
+
+    for (let j = 0; j < connections.length; j++) {
+      let pointAIndex = connections[j][0];
+      let pointBIndex = connections[j][1];
+      let pointA = hand.keypoints[pointAIndex];
+      let pointB = hand.keypoints[pointBIndex];
+      stroke(255, 0, 0);
+      strokeWeight(2);
+      line(pointA.x, pointA.y, pointB.x, pointB.y);
+          
+      // if (pointA.name.includes('index') || pointA.name.includes('middle')) {
+      //   console.log('----------------------')
+      //   console.log(`${pointA.name} to ${pointB.name}`)
+      //   console.log(distance(pointA.x, pointB.x, pointA.y, pointB.y))
+      //   console.log('----------------------')
+      // }
+    }
+    console.log('/////////////////////////////')
+  }
+
+  for (let i = 0; i < hands.length; i++) {
+    let hand = hands[i];
     for (let j = 0; j < hand.keypoints.length; j++) {
       let keypoint = hand.keypoints[j];
-      if (keypoint.name.includes('thumb') || keypoint.name.includes('index') || keypoint.name.includes('middle')) {
-        console.log(`${keypoint.name.split('_')[0]} ${keypoint.name.includes('thumb') ? keypoint.name.split('_')[1] : keypoint.name.split('_')[2]} (x, y): (${Number(keypoint.x.toFixed(2))}, ${Number(keypoint.y.toFixed(2))})`)
+      if (keypoint.name.includes('index') || keypoint.name.includes('middle')) {
+        // console.log(`${keypoint.name.split('_')[0]} ${keypoint.name.includes('thumb') ? keypoint.name.split('_')[1] : keypoint.name.split('_')[2]} (x, y): (${Number(keypoint.x.toFixed(2))}, ${Number(keypoint.y.toFixed(2))})`)
         coords.push([Number(keypoint.x.toFixed(2)), Number(keypoint.y.toFixed(2))])
         fill(0, 255, 0);
         circle(keypoint.x, keypoint.y, 10);
       }
     } 
-  }
-  
-  if (coords.length > 0) {
-    console.log('________________________')
-    console.log(get_highest_difference(minify(coords), minify(SCROLL)))
-    console.log('________________________')
   }
 }
 
@@ -85,4 +127,12 @@ function get_highest_difference(arr1, arr2) {
 
   // return parseFloat(Number(Math.max(...differences)).toFixed(2))
   return [Math.min(...differences), Math.max(...differences)]
+}
+
+function distance(x1, x2, y1, y2) {
+  return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
+}
+
+function fingersTogether(mcp, pip, dip, tip) {
+  
 }
